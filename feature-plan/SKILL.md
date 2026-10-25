@@ -16,11 +16,13 @@ The agent always has access to the code that will be changed. Read it before ask
 Goal: find every detail the plan would otherwise have to guess. The grilling is a free-form interview about this change. Ask whatever the situation needs; do not work through a fixed checklist. The areas below are only examples of things that often matter, not a scope limit.
 
 Before asking anything:
+
 - Read the user's description, any ticket, pasted code, and attached files.
 - Read the relevant code in the repository, including nearby modules and existing patterns, so you know what is already true.
 - Note what is already known. Do not ask for information that is already in front of you or in the code.
 
 How to ask:
+
 - Ask in rounds. Each round covers every question whose prerequisites are already answered. Never ask a question that depends on an answer you have not heard yet.
 - Keep rounds focused. A round can be a few questions or many, depending on what is unclear.
 - Prefer concrete questions, and where you can, give a recommended answer based on the code, so the developer can reply "yes" or "go with your recommendation".
@@ -29,6 +31,7 @@ How to ask:
 - Accept "I don't know" when it is honest, and record it as an open question or an assumption.
 
 Rules for this phase:
+
 - Stop when no unstated assumptions remain that would change the plan. Count rounds, not questions. Long interviews usually mean the scope is too large; say so and suggest splitting the change.
 - If the user answers "use your judgment" to something, record the assumption you chose under **Assumptions**, so it is visible and can be overruled.
 - If the user says "stop asking" or "just write it", write the plan now and list every unresolved question under **Open questions** at the top, so the executor knows what was guessed.
@@ -41,6 +44,10 @@ Use this exact structure. Every step must be specific enough that the executor n
 
 ```
 # Plan: <feature name>
+
+## Meta
+- **Generated**: <YYYY-MM-DD HH:mm, local time>
+- **Last updated**: <YYYY-MM-DD HH:mm, local time; same as Generated on first save>
 
 ## Summary
 Two or three sentences: what changes, why, and what is out of scope.
@@ -73,6 +80,7 @@ Which steps must finish before others, and any command to run between steps (bui
 ```
 
 Guidelines for writing steps:
+
 - One step equals one reviewable change. If a step has "and" in the title twice, split it.
 - Name exact paths, exact identifiers, and exact config keys. Never write "the appropriate file" or "the relevant service".
 - Put commands in code blocks, marked with the working directory they run in.
@@ -85,6 +93,7 @@ Guidelines for writing steps:
 Every plan ends with a checklist that a person can work through by hand. The checklist exists so that the developer confirms results with their own eyes, not by assuming the code is right.
 
 Rules:
+
 - Each check has a **Do** (the exact action to take) and an **Expect** (the exact observable output that means pass).
 - Expected outputs must be observable: a specific value, a status code, a row count, a log line, a rendered label, a file that exists with specific content. "It works" is not an expected output.
 - Include checks at three levels, in this order:
@@ -92,7 +101,7 @@ Rules:
   2. **Unit or component**: the named tests pass, and any new test is listed by name.
   3. **End to end**: run the feature in the target environment and check the user-visible result, including at least one failure case that came up during grilling.
 - Add a regression check for any existing behavior that the grilling identified as at risk of changing.
-- Finish with a sign-off line: "All checks above passed. Date: ____ Tester: ____".
+- Finish with a sign-off line: "All checks above passed. Date: \_**\_ Tester: \_\_**".
 
 Format each check like this:
 
@@ -108,7 +117,14 @@ Format each check like this:
 
 ## Delivering the plan
 
-- Save the plan as a Markdown file when the user asks for a file, or present it inline when they want to read it in the conversation. If the plan is long and will be shared or executed later, offer to save it as a document.
+- Always save the plan as a Markdown file by default, in the `.plans` folder at the root of the opened project. Create the folder if it does not exist.
+- Name the file `XXXX-<plan name>.md`, where `XXXX` is a zero-padded 4-digit sequence number and the plan name is short, lowercase, and space-separated. Example: `.plans/0001-test feature plan.md`.
+- Pick the number by listing `.plans` and using the highest existing `XXXX` plus one, starting at `0001` when the folder is empty.
+- If a plan for the same feature already exists in `.plans`, update that file in place instead of creating a new one. Keep its number and name, keep its **Generated** value, and refresh **Last updated**.
+- Include the **Meta** section with the date and time the plan was generated, as shown in the Phase 2 structure.
+- Override these defaults only when the user's prompt gives instructions that affect them, such as a different location or file name, a different format, "don't save", or "just show it here". Follow those instructions instead.
+- After saving, tell the user the full path and the file name of the plan.
+- Open the saved file in the editor so the user can read and review it (for example `code -r "<path>"`, or the editor's open-file tool). Show the plan inline as well only if the user asked to see it in the conversation.
 - End with one short line asking whether to adjust anything before the plan is used. Do not start implementing unless the user explicitly asks you to.
 
 ## Example opener
