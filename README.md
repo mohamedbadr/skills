@@ -7,6 +7,7 @@ A collection of reusable skills for AI assistants. Each skill lives in its own f
 | Skill | Description |
 |-------|-------------|
 | [feature-plan](feature-plan/SKILL.md) | Interviews you about a code change with open-ended questions, then writes a step-by-step implementation plan a low-cost LLM or junior developer can follow. Ends with a manual verification checklist where every step has an expected output. |
+| [change-review](change-review/SKILL.md) | Reviews code changes, including uncommitted work, on three axes: Plan (everything the plan or ticket asked is done, nothing extra), Impact (no caller, contract, data, or config elsewhere is broken), and Standards. Verifies each finding before reporting and saves a review report. Works with feature-plan plans, any spec, or none. |
 
 ## Installation
 
@@ -16,7 +17,7 @@ Install for all your projects:
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r feature-plan ~/.claude/skills/
+cp -r feature-plan change-review ~/.claude/skills/
 ```
 
 Or for a single project, copy it into `<project>/.claude/skills/`. Claude loads the skill automatically when a request matches its description.
@@ -49,6 +50,12 @@ Describe the change you want to make, for example:
 > Plan this change: add an Excel export button to the invoice page.
 
 The assistant asks its questions in rounds, then produces the plan and checklist. Review the plan before any code is written.
+
+After implementing, and before committing or reviewing by hand, ask for a review, ideally in a fresh session:
+
+> Review my changes against .plans/0001-excel export.md
+
+Without a path, `change-review` looks for a matching plan in `.plans/`, then a ticket, and otherwise reviews Impact and Standards only.
 
 ## Adding a new skill
 
